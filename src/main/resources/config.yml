@@ -184,3 +184,13 @@ chests:
     particles:
       - SMOKE_NORMAL
       - FLAME
+  trash_chest:
+    chest-mode: CHEST
+    size: 6
+    title: Trash Chest - Items will be deleted every minute
+    item:
+      name: '&8Trash Chest &7(Place to activate)'
+    trash-mode: true
+    trash-interval-seconds: 60
+    particles:
+      - SMOKE_NORMAL

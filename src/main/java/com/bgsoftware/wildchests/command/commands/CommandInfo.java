@@ -64,6 +64,10 @@ public final class CommandInfo implements ICommand {
         Locale.CHEST_INFO_SIZE.send(sender, chestData.getDefaultSize());
         Locale.CHEST_INFO_DEFAULT_TITLE.send(sender, chestData.getDefaultTitle());
         Locale.CHEST_INFO_SELL_MODE.send(sender, chestData.isSellMode());
+        Locale.CHEST_INFO_TRASH_MODE.send(sender, chestData.isTrashMode());
+        if (chestData.isTrashMode()) {
+            Locale.CHEST_INFO_TRASH_INTERVAL.send(sender, chestData.getTrashIntervalSeconds());
+        }
 
         //Optional sections
         if (chestData.isAutoCrafter())

@@ -32,6 +32,8 @@ public final class WChestData implements ChestData {
     private int defaultSize;
     private String defaultTitle;
     private boolean sellMode;
+    private boolean trashMode;
+    private int trashIntervalSeconds;
     private DepositMethod depositMethod;
     private boolean hopperFilter;
     private Map<Recipe, List<RecipeUtils.RecipeIngredient>> recipes;
@@ -54,6 +56,8 @@ public final class WChestData implements ChestData {
         this.defaultSize = 9 * 3;
         this.defaultTitle = "Chest";
         this.sellMode = false;
+        this.trashMode = false;
+        this.trashIntervalSeconds = 60;
         this.depositMethod = DepositMethod.VAULT;
         this.hopperFilter = false;
         this.recipes = new HashMap<>();
@@ -107,6 +111,16 @@ public final class WChestData implements ChestData {
     @Override
     public boolean isSellMode() {
         return sellMode;
+    }
+
+    @Override
+    public boolean isTrashMode() {
+        return trashMode;
+    }
+
+    @Override
+    public int getTrashIntervalSeconds() {
+        return trashIntervalSeconds;
     }
 
     @Override
@@ -221,6 +235,16 @@ public final class WChestData implements ChestData {
     }
 
     @Override
+    public void setTrashMode(boolean trashMode) {
+        this.trashMode = trashMode;
+    }
+
+    @Override
+    public void setTrashIntervalSeconds(int trashIntervalSeconds) {
+        this.trashIntervalSeconds = Math.max(1, trashIntervalSeconds);
+    }
+
+    @Override
     public void setDepositMethod(DepositMethod depositMethod) {
         this.depositMethod = depositMethod;
     }
@@ -303,6 +327,8 @@ public final class WChestData implements ChestData {
                 "defaultSize=" + defaultSize + "," +
                 "defaultTitle=" + defaultTitle + "," +
                 "sellMode=" + sellMode + "," +
+                "trashMode=" + trashMode + "," +
+                "trashIntervalSeconds=" + trashIntervalSeconds + "," +
                 "recipes=" + getRecipes() +
                 "}";
     }
@@ -312,6 +338,8 @@ public final class WChestData implements ChestData {
         this.defaultSize = chestData.defaultSize;
         this.defaultTitle = chestData.defaultTitle;
         this.sellMode = chestData.sellMode;
+        this.trashMode = chestData.trashMode;
+        this.trashIntervalSeconds = chestData.trashIntervalSeconds;
         this.hopperFilter = chestData.hopperFilter;
         this.recipes = chestData.recipes;
         this.pagesData = chestData.pagesData;

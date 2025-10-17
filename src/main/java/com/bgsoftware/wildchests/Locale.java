@@ -36,6 +36,8 @@ public final class Locale {
     public static Locale CHEST_INFO_SIZE = new Locale("CHEST_INFO_SIZE");
     public static Locale CHEST_INFO_DEFAULT_TITLE = new Locale("CHEST_INFO_DEFAULT_TITLE");
     public static Locale CHEST_INFO_SELL_MODE = new Locale("CHEST_INFO_SELL_MODE");
+    public static Locale CHEST_INFO_TRASH_MODE = new Locale("CHEST_INFO_TRASH_MODE");
+    public static Locale CHEST_INFO_TRASH_INTERVAL = new Locale("CHEST_INFO_TRASH_INTERVAL");
     public static Locale CHEST_INFO_RECIPES = new Locale("CHEST_INFO_RECIPES");
     public static Locale CHEST_INFO_FOOTER = new Locale("CHEST_INFO_FOOTER");
     public static Locale CHEST_PLACED = new Locale("CHEST_PLACED");

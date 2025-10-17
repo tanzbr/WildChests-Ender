@@ -54,6 +54,16 @@ public interface ChestData {
     boolean isSellMode();
 
     /**
+     * Whether or not the chest has trash-mode enabled.
+     */
+    boolean isTrashMode();
+
+    /**
+     * Get the trash interval in seconds for trash-mode chests.
+     */
+    int getTrashIntervalSeconds();
+
+    /**
      * Whether or not the chest has hopper-filter mode enabled for auto crafters.
      */
     boolean isHopperFilter();
@@ -150,6 +160,18 @@ public interface ChestData {
      * @param sellMode The new status.
      */
     void setSellMode(boolean sellMode);
+
+    /**
+     * Set the trash mode status for this chest.
+     * @param trashMode The new status.
+     */
+    void setTrashMode(boolean trashMode);
+
+    /**
+     * Set the trash interval in seconds for this chest.
+     * @param trashIntervalSeconds The new interval in seconds.
+     */
+    void setTrashIntervalSeconds(int trashIntervalSeconds);
 
     /**
      * Set the deposit method for this chest.

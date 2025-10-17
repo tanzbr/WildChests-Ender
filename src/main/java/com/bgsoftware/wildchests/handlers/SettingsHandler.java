@@ -210,6 +210,19 @@ public final class SettingsHandler {
             chestData.setSellMode(true);
         }
 
+        if (section.getBoolean("trash-mode", false)) {
+            chestData.setTrashMode(true);
+        }
+
+        if (section.contains("trash-interval-seconds")) {
+            int trashInterval = section.getInt("trash-interval-seconds", 60);
+            if (trashInterval < 1) {
+                WildChestsPlugin.log("Found an invalid trash-interval-seconds for " + chestName + " - setting default to 60 seconds");
+                trashInterval = 60;
+            }
+            chestData.setTrashIntervalSeconds(trashInterval);
+        }
+
         if (section.contains("deposit-method")) {
             String depositMethod = section.getString("deposit-method").toUpperCase(Locale.ENGLISH);
             try {
