@@ -18,6 +18,7 @@ import com.bgsoftware.wildchests.handlers.SettingsHandler;
 import com.bgsoftware.wildchests.listeners.BlockListener;
 import com.bgsoftware.wildchests.listeners.ChunksListener;
 import com.bgsoftware.wildchests.listeners.InventoryListener;
+import com.bgsoftware.wildchests.listeners.ItemSpawnListener;
 import com.bgsoftware.wildchests.listeners.PlayerListener;
 import com.bgsoftware.wildchests.nms.NMSAdapter;
 import com.bgsoftware.wildchests.nms.NMSInventory;
@@ -82,6 +83,7 @@ public final class WildChestsPlugin extends JavaPlugin implements WildChests {
         getServer().getPluginManager().registerEvents(new BlockListener(this), this);
         getServer().getPluginManager().registerEvents(new ChunksListener(this), this);
         getServer().getPluginManager().registerEvents(new InventoryListener(this), this);
+        getServer().getPluginManager().registerEvents(new ItemSpawnListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 
         CommandsHandler commandsHandler = new CommandsHandler(this);

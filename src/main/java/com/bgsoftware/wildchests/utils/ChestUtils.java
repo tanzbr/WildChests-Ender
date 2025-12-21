@@ -174,6 +174,12 @@ public final class ChestUtils {
         Bukkit.getPluginManager().callEvent(sellChestTaskEvent);
 
         double finalPrice = transactionResult.getData() * sellChestTaskEvent.getMultiplier();
+        
+        // Apply price boost if configured
+        double priceBoost = chestData.getPriceBoost(toSell);
+        if (priceBoost > 1.0) {
+            finalPrice *= priceBoost;
+        }
 
         if (finalPrice <= 0)
             return false;

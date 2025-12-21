@@ -119,6 +119,12 @@ public interface ChestData {
     boolean isAutoSuctionChunk();
 
     /**
+     * Check whether or not this chest has instant-collection enabled.
+     * When enabled, items are collected immediately on spawn, preventing entity creation.
+     */
+    boolean isInstantCollection();
+
+    /**
      * Get the deposit method.
      */
     DepositMethod getDepositMethod();
@@ -142,6 +148,29 @@ public interface ChestData {
      * Get the particles of this chest.
      */
     List<String> getChestParticles();
+
+    /**
+     * Get the price boosts for sell-mode chests.
+     * Returns a map of material names to their price multipliers.
+     * For example, "CACTUS" -> 2.0 means cactus prices are doubled.
+     * @return Map of material names to multipliers
+     */
+    Map<String, Double> getPriceBoosts();
+
+    /**
+     * Get the price boost for a specific item.
+     * @param itemStack The item to check
+     * @return The multiplier for this item, or 1.0 if no boost is configured
+     */
+    double getPriceBoost(ItemStack itemStack);
+
+    /**
+     * Check if cactus nerf is enabled for this chest.
+     * When enabled, naturally grown cactus has 75% chance to be collected with instant-collection.
+     * Player-dropped cactus always has 100% collection rate.
+     * @return true if cactus nerf is enabled
+     */
+    boolean isCactusNerfEnabled();
 
     /**
      * Set the default size of the pages.
@@ -230,6 +259,12 @@ public interface ChestData {
     void setAutoSuctionChunk(boolean autoSuctionChunk);
 
     /**
+     * Set whether or not this chest should have instant-collection enabled.
+     * @param instantCollection The new instant-collection status
+     */
+    void setInstantCollection(boolean instantCollection);
+
+    /**
      * Set the blacklisted items for the chest.
      * @param blacklisted The new blacklisted items.
      */
@@ -252,5 +287,19 @@ public interface ChestData {
      * @param particles The new particles
      */
     void setParticles(List<String> particles);
+
+    /**
+     * Set the price boosts for sell-mode chests.
+     * @param boosts List of boost strings in format "MATERIAL:MULTIPLIER" (e.g., "CACTUS:2.0")
+     */
+    void setPriceBoosts(List<String> boosts);
+
+    /**
+     * Set whether cactus nerf is enabled for this chest.
+     * When enabled, naturally grown cactus has 75% chance to be collected.
+     * Player-dropped cactus always has 100% collection rate.
+     * @param cactusNerf true to enable cactus nerf
+     */
+    void setCactusNerf(boolean cactusNerf);
 
 }

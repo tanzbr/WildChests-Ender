@@ -56,6 +56,7 @@ public class TileEntityWildChest extends TileEntityChest implements IWorldInvent
     private AxisAlignedBB suctionItems = null;
     private boolean autoCraftMode = false;
     private boolean autoSellMode = false;
+    private boolean instantCollectionMode = false;
 
     public TileEntityWildChest(Chest chest, World world, BlockPosition blockPosition) {
         this.chest = chest;
@@ -214,7 +215,11 @@ public class TileEntityWildChest extends TileEntityChest implements IWorldInvent
         currentCooldown = ChestUtils.DEFAULT_COOLDOWN;
 
         if (suctionItems != null) {
-            handleSuctionItems(chestData);
+            // Only process traditional suction if instant-collection is disabled
+            // When instant-collection is enabled, items are handled by ItemSpawnListener
+            if (!instantCollectionMode) {
+                handleSuctionItems(chestData);
+            }
         }
 
         if (autoCraftMode) {
@@ -257,6 +262,7 @@ public class TileEntityWildChest extends TileEntityChest implements IWorldInvent
         );
         autoCraftMode = chestData.isAutoCrafter();
         autoSellMode = chestData.isSellMode();
+        instantCollectionMode = chestData.isInstantCollection();
     }
 
     @Override

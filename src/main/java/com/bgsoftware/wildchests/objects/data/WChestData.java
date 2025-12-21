@@ -43,8 +43,11 @@ public final class WChestData implements ChestData {
     private boolean autoCollect;
     private int autoSuctionRange;
     private boolean autoSuctionChunk;
+    private boolean instantCollection;
     private KeySet blacklisted, whitelisted;
     private List<String> particles;
+    private Map<String, Double> priceBoosts;
+    private boolean cactusNerf;
 
     //Storage Units only!
     private BigInteger maxAmount;
@@ -67,9 +70,12 @@ public final class WChestData implements ChestData {
         this.maxAmount = BigInteger.valueOf(-1);
         this.autoSuctionRange = -1;
         this.autoSuctionChunk = false;
+        this.instantCollection = false;
         this.blacklisted = new KeySet();
         this.whitelisted = new KeySet();
         this.particles = Collections.emptyList();
+        this.priceBoosts = new HashMap<>();
+        this.cactusNerf = false;
     }
 
     @Override
@@ -192,6 +198,16 @@ public final class WChestData implements ChestData {
     }
 
     @Override
+    public boolean isInstantCollection() {
+        return instantCollection;
+    }
+
+    @Override
+    public boolean isCactusNerfEnabled() {
+        return cactusNerf;
+    }
+
+    @Override
     public DepositMethod getDepositMethod() {
         return depositMethod;
     }
@@ -217,6 +233,17 @@ public final class WChestData implements ChestData {
     @Override
     public List<String> getChestParticles() {
         return particles;
+    }
+
+    @Override
+    public Map<String, Double> getPriceBoosts() {
+        return new HashMap<>(priceBoosts);
+    }
+
+    @Override
+    public double getPriceBoost(ItemStack itemStack) {
+        String materialName = itemStack.getType().name();
+        return priceBoosts.getOrDefault(materialName, 1.0);
     }
 
     @Override
@@ -297,6 +324,16 @@ public final class WChestData implements ChestData {
     }
 
     @Override
+    public void setInstantCollection(boolean instantCollection) {
+        this.instantCollection = instantCollection;
+    }
+
+    @Override
+    public void setCactusNerf(boolean cactusNerf) {
+        this.cactusNerf = cactusNerf;
+    }
+
+    @Override
     public void setBlacklisted(Set<Key> blacklisted) {
         this.blacklisted.addAll(blacklisted);
     }
@@ -317,6 +354,23 @@ public final class WChestData implements ChestData {
     @Override
     public void setParticles(List<String> particles) {
         this.particles = Collections.unmodifiableList(particles);
+    }
+
+    @Override
+    public void setPriceBoosts(List<String> boosts) {
+        this.priceBoosts.clear();
+        for (String boost : boosts) {
+            String[] parts = boost.split(":");
+            if (parts.length >= 2) {
+                try {
+                    String materialName = parts[0].toUpperCase().trim();
+                    double multiplier = Double.parseDouble(parts[1].trim());
+                    this.priceBoosts.put(materialName, multiplier);
+                } catch (NumberFormatException e) {
+                    // Ignore invalid boost entries
+                }
+            }
+        }
     }
 
     @Override
@@ -348,9 +402,12 @@ public final class WChestData implements ChestData {
         this.autoCollect = chestData.autoCollect;
         this.autoSuctionRange = chestData.autoSuctionRange;
         this.autoSuctionChunk = chestData.autoSuctionChunk;
+        this.instantCollection = chestData.instantCollection;
+        this.cactusNerf = chestData.cactusNerf;
         this.blacklisted = chestData.blacklisted;
         this.whitelisted = chestData.whitelisted;
         this.particles = chestData.particles;
+        this.priceBoosts = chestData.priceBoosts;
         this.maxAmount = chestData.maxAmount;
     }
 

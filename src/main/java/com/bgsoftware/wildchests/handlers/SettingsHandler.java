@@ -54,6 +54,13 @@ public final class SettingsHandler {
     public final int maximumPickupDelay;
     public final int maxStacksOnDrop;
 
+    // Suction notifications settings
+    public final boolean suctionNotificationsEnabled;
+    public final int suctionNotificationsRadius;
+    public final long suctionNotificationsDuplicateDelay;
+    public final String suctionNotificationsMessage;
+    public final String suctionNotificationsMessageNoOwner;
+
     public SettingsHandler(WildChestsPlugin plugin) {
         WildChestsPlugin.log("Loading configuration started...");
         long startTime = System.currentTimeMillis();
@@ -94,6 +101,15 @@ public final class SettingsHandler {
         wildStackerHook = cfg.getBoolean("hooks.wildstacker", true);
         maximumPickupDelay = cfg.getInt("maximum-pickup-delay", 32767);
         maxStacksOnDrop = cfg.getInt("max-stacks-on-drop", -1);
+
+        // Load suction notifications settings
+        suctionNotificationsEnabled = cfg.getBoolean("suction-notifications.enabled", true);
+        suctionNotificationsRadius = cfg.getInt("suction-notifications.radius", 5);
+        suctionNotificationsDuplicateDelay = cfg.getLong("suction-notifications.duplicate-delay", 3000L);
+        suctionNotificationsMessage = cfg.getString("suction-notifications.message", 
+            "&4[AVISO] &cUm item &7({material}) &cfoi coletado por um Baú Hopper perto de você! &8(Dono: {owner})");
+        suctionNotificationsMessageNoOwner = cfg.getString("suction-notifications.message-no-owner",
+            "&4[AVISO] &cUm item &7({material}) &cfoi coletado por um Baú Hopper perto de você!");
 
         Map<String, Double> prices = new HashMap<>();
 
@@ -265,6 +281,8 @@ public final class SettingsHandler {
         if (section.contains("auto-suction")) {
             chestData.setAutoSuctionRange(section.getInt("auto-suction.range", 1));
             chestData.setAutoSuctionChunk(section.getBoolean("auto-suction.chunk", false));
+            chestData.setInstantCollection(section.getBoolean("auto-suction.instant-collection", false));
+            chestData.setCactusNerf(section.getBoolean("auto-suction.nerf-cactus", false));
         }
 
         if (section.contains("blacklist")) {
@@ -283,6 +301,10 @@ public final class SettingsHandler {
 
         if (section.contains("particles")) {
             chestData.setParticles(section.getStringList("particles"));
+        }
+
+        if (section.contains("boosts")) {
+            chestData.setPriceBoosts(section.getStringList("boosts"));
         }
 
         return chestData;

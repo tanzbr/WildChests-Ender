@@ -76,6 +76,20 @@ maximum-pickup-delay: 32767
 # You can disable this feature by setting it to -1.
 max-stacks-on-drop: -1
 
+# All settings related to suction notifications
+# These notifications are sent to nearby players when items are collected by chest with instant-collection
+suction-notifications:
+  # Should notifications be sent to nearby players when items are collected?
+  enabled: true
+  # Radius in blocks to send notifications
+  radius: 5
+  # Delay in milliseconds between duplicate item notifications (prevents spam)
+  duplicate-delay: 3000
+  # Message format (placeholders: {material}, {owner})
+  message: '&4[AVISO] &cUm item &7({material}) &cfoi coletado por um Baú Hopper perto de você! &8(Dono: {owner})'
+  # Message when owner is unknown
+  message-no-owner: '&4[AVISO] &cUm item &7({material}) &cfoi coletado por um Baú Hopper perto de você!'
+
 # The plugin brings tons of new custom and unique chests to your server. All the chests are configurable, and
 # you can create and mix between them. You can create chests that stores infinite amount of items, chests that
 # are connected to player vaults or factions, linked chests and many more!
@@ -112,6 +126,8 @@ max-stacks-on-drop: -1
 # auto-suction.range: Should items inside the specified range will get suctioned into the chest? (INTEGER)
 # auto-suction.chunk: Should items inside the chunk will get suctioned into the chest? (BOOLEAN)
 #      If you set it to true, the range will be checked as y-range only.
+# auto-suction.instant-collection: Should items be collected instantly on spawn, preventing entity creation? (BOOLEAN)
+#      When enabled, items will be collected before they spawn as entities, reducing lag significantly.
 # blacklist: A list of items that won't be picked up by the chests (only works for auto-suction for now)
 # whitelist: A list of items that will be picked up by the chests (only works for auto-suction for now)
 # particles: A list of particles that will be shown to the chest.
@@ -152,6 +168,15 @@ chests:
     item:
       name: '&dSell Chest &7(Place to active)'
     sell-mode: true
+    # Optional: Configure price boosts for specific items
+    # Format: MATERIAL:MULTIPLIER (e.g., "CACTUS:2.0" means cactus is worth 2x more)
+    # You can also use data values: MATERIAL:DATA:MULTIPLIER (e.g., "WOOL:14:1.5")
+    # Examples:
+    #   - "CACTUS:5.0625"  # Cactus worth 5x more
+    #   - "DIAMOND:2.0"    # Diamond worth 2x more
+    boosts:
+      - "CACTUS:2.0"
+      - "DIAMOND:1.5"
     particles:
       - SPELL_WITCH
   auto_crafter:
@@ -181,6 +206,11 @@ chests:
     auto-suction:
       range: 5
       chunk: true
+      instant-collection: true
+      # Optional: Enable cactus nerf to reduce natural cactus collection
+      # When true: naturally grown cactus has 75% chance to be collected
+      # Player-dropped cactus always has 100% collection rate
+      nerf-cactus: false
     particles:
       - SMOKE_NORMAL
       - FLAME
@@ -194,3 +224,20 @@ chests:
     trash-interval-seconds: 60
     particles:
       - SMOKE_NORMAL
+  cactus_farm_collector:
+    chest-mode: CHEST
+    size: 6
+    title: Cactus Farm Collector
+    item:
+      name: '&2Cactus Farm &7(Place to active)'
+    auto-suction:
+      range: 10
+      chunk: false
+      instant-collection: true
+      # Enable cactus nerf: reduces natural cactus collection to 75% chance
+      # Naturally grown cactus: 75% collection chance (25% will spawn normally)
+      # Player-dropped cactus: 100% collection chance
+      nerf-cactus: true
+    particles:
+      - VILLAGER_HAPPY
+
