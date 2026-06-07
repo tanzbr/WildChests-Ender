@@ -18,6 +18,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nullable;
 import java.util.LinkedList;
@@ -99,8 +101,12 @@ public final class BlockListener implements Listener {
 
         if (e.getPlayer().getGameMode() != GameMode.CREATIVE) {
             ChestData chestData = chest.getData();
-            ItemUtils.dropOrCollect(e.getPlayer(), chestData.getItemStack(), chestData.isAutoCollect(),
-                    chest.getLocation(), false);
+            ItemStack chestItem = chestData.getItemStack();
+
+            if (!canFitItem(e.getPlayer().getInventory(), chestItem))
+                return;
+
+            ItemUtils.addItem(chestItem, e.getPlayer().getInventory(), chest.getLocation());
         }
 
         chest.onBreak(e);
@@ -159,6 +165,30 @@ public final class BlockListener implements Listener {
         } catch (IllegalArgumentException error) {
             return null;
         }
+    }
+
+    private static boolean canFitItem(Inventory inventory, ItemStack itemStack) {
+        if (ItemUtils.isEmpty(itemStack))
+            return true;
+
+        int remainingAmount = itemStack.getAmount();
+        int maxStackSize = Math.min(itemStack.getMaxStackSize(), inventory.getMaxStackSize());
+
+        if (maxStackSize <= 0)
+            return false;
+
+        for (ItemStack inventoryItem : inventory.getContents()) {
+            if (ItemUtils.isEmpty(inventoryItem)) {
+                remainingAmount -= maxStackSize;
+            } else if (inventoryItem.isSimilar(itemStack)) {
+                remainingAmount -= Math.max(0, maxStackSize - inventoryItem.getAmount());
+            }
+
+            if (remainingAmount <= 0)
+                return true;
+        }
+
+        return false;
     }
 
 }
