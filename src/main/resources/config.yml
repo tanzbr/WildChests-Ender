@@ -109,8 +109,11 @@ suction-notifications:
 # size: Amount of rows the chest will have (INTEGER) (Will be overridden by pages' size)
 # title: Global title for all pages. Will be overridden by page's title (STRING)
 # sell-chest: Should items in this chest will be sold to the chest placer? (BOOLEAN)
-# crafter-chest: List of recipes that will take action in this chest (LIST)
-#      Please follow "TYPE" and "TYPE:DATA" formats
+# crafter-chest: List of recipes for auto-crafting (LIST)
+#      Legacy format: "MATERIAL" — matches all recipes producing that item (bidirectional)
+#      Chain format:  "A > B > C" — forward-only chain (prevents bar↔block loops)
+#      Example chain: "GOLD_NUGGET > GOLD_INGOT > GOLD_BLOCK"
+#      Please follow "TYPE" and "TYPE:DATA" formats for legacy entries
 # hopper-filter: When enabled, only craftable items will go into hoppers below (BOOLEAN)
 # pages: Section that handles all settings for pages
 # pages.default: Default amount of pages (INTEGER) [REQUIRED FOR PAGES]
@@ -186,7 +189,7 @@ chests:
     item:
       name: '&cAuto Crafter &7(Place to active)'
     crafter-chest:
-      - GOLD_INGOT
+      - "GOLD_NUGGET > GOLD_INGOT > GOLD_BLOCK"
     particles:
       - LANDING_LAVA
   storage_unit:

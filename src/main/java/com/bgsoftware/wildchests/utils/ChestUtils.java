@@ -18,6 +18,7 @@ import org.bukkit.inventory.Recipe;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -80,11 +81,18 @@ public final class ChestUtils {
     public static void tryCraftChest(Chest chest) {
         Inventory[] pages = chest.getPages();
 
-        Iterator<Map.Entry<Recipe, List<RecipeUtils.RecipeIngredient>>> recipes = ((WChestData) chest.getData()).getRecipeIngredients();
+        List<Map.Entry<Recipe, List<RecipeUtils.RecipeIngredient>>> recipeList = new ArrayList<>();
+        Iterator<Map.Entry<Recipe, List<RecipeUtils.RecipeIngredient>>> recipes =
+                ((WChestData) chest.getData()).getRecipeIngredients();
+
+        while (recipes.hasNext())
+            recipeList.add(recipes.next());
+
+        recipeList.sort(Comparator.comparingInt(entry -> CrafterChainUtils.getProcessOrder(entry.getKey())));
+
         List<ItemStack> toAdd = new ArrayList<>();
 
-        while (recipes.hasNext()) {
-            Map.Entry<Recipe, List<RecipeUtils.RecipeIngredient>> recipe = recipes.next();
+        for (Map.Entry<Recipe, List<RecipeUtils.RecipeIngredient>> recipe : recipeList) {
 
             if (recipe.getValue().isEmpty())
                 continue;
@@ -94,12 +102,17 @@ public final class ChestUtils {
             Map<RecipeUtils.RecipeIngredient, List<Integer>> slots = new HashMap<>();
 
             for (RecipeUtils.RecipeIngredient ingredient : recipe.getValue()) {
+                int totalAmount = 0;
+                List<Integer> allSlots = new ArrayList<>();
+
                 for (int i = 0; i < pages.length; i++) {
-                    // Count items returns a list of slots and the total amount of the items in the slots.
                     Pair<List<Integer>, Integer> countResult = RecipeUtils.countItems(ingredient, pages[i], i * pageSize);
-                    amountOfRecipes = Math.min(amountOfRecipes, countResult.value / ingredient.getAmount());
-                    slots.put(ingredient, countResult.key);
+                    totalAmount += countResult.value;
+                    allSlots.addAll(countResult.key);
                 }
+
+                amountOfRecipes = Math.min(amountOfRecipes, totalAmount / ingredient.getAmount());
+                slots.put(ingredient, allSlots);
             }
 
             if (amountOfRecipes > 0) {

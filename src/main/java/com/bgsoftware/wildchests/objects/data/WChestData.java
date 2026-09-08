@@ -7,16 +7,21 @@ import com.bgsoftware.wildchests.api.objects.DepositMethod;
 import com.bgsoftware.wildchests.api.objects.data.ChestData;
 import com.bgsoftware.wildchests.api.objects.data.InventoryData;
 import com.bgsoftware.wildchests.key.KeySet;
+import com.bgsoftware.wildchests.utils.CrafterChainUtils;
 import com.bgsoftware.wildchests.utils.RecipeUtils;
 import com.google.common.collect.Iterators;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,7 +68,7 @@ public final class WChestData implements ChestData {
         this.trashIntervalSeconds = 60;
         this.depositMethod = DepositMethod.VAULT;
         this.hopperFilter = false;
-        this.recipes = new HashMap<>();
+        this.recipes = new LinkedHashMap<>();
         this.pagesData = new HashMap<>();
         this.defaultPagesAmount = 1;
         this.multiplier = 1;
@@ -283,13 +288,57 @@ public final class WChestData implements ChestData {
 
     @Override
     public void setAutoCrafter(List<String> recipes) {
-        Iterator<Recipe> bukkitRecipes = Bukkit.recipeIterator();
-        KeySet recipesSet = new KeySet(recipes);
+        this.recipes.clear();
 
-        while (bukkitRecipes.hasNext()) {
-            Recipe recipe = bukkitRecipes.next();
-            if (recipesSet.contains(recipe.getResult()))
+        List<List<Material>> chains = new ArrayList<>();
+        List<String> legacyEntries = new ArrayList<>();
+
+        for (String entry : recipes) {
+            if (CrafterChainUtils.isChainEntry(entry)) {
+                CrafterChainUtils.parseChain(entry).ifPresentOrElse(chains::add, () ->
+                        CrafterChainUtils.logInvalidChain(entry));
+            } else {
+                legacyEntries.add(entry);
+            }
+        }
+
+        if (!chains.isEmpty()) {
+            List<Recipe> chainRecipes = new ArrayList<>();
+            Iterator<Recipe> bukkitRecipes = Bukkit.recipeIterator();
+
+            while (bukkitRecipes.hasNext()) {
+                Recipe recipe = bukkitRecipes.next();
+
+                for (List<Material> chain : chains) {
+                    if (CrafterChainUtils.isRecipeAllowedForChain(recipe, chain)) {
+                        chainRecipes.add(recipe);
+                        break;
+                    }
+                }
+            }
+
+            chainRecipes.sort(Comparator.comparingInt(recipe -> {
+                int minIndex = Integer.MAX_VALUE;
+                for (List<Material> chain : chains) {
+                    int index = CrafterChainUtils.getChainResultIndex(recipe, chain);
+                    minIndex = Math.min(minIndex, index);
+                }
+                return minIndex;
+            }));
+
+            for (Recipe recipe : chainRecipes)
                 this.recipes.put(recipe, RecipeUtils.getIngredients(recipe));
+        }
+
+        if (!legacyEntries.isEmpty()) {
+            KeySet recipesSet = new KeySet(legacyEntries);
+            Iterator<Recipe> bukkitRecipes = Bukkit.recipeIterator();
+
+            while (bukkitRecipes.hasNext()) {
+                Recipe recipe = bukkitRecipes.next();
+                if (recipesSet.contains(recipe.getResult()))
+                    this.recipes.put(recipe, RecipeUtils.getIngredients(recipe));
+            }
         }
     }
 
