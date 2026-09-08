@@ -16,6 +16,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -219,6 +220,10 @@ public final class ChestUtils {
         }
 
         return successDeposit;
+    }
+
+    public static boolean isChest(Material blockType) {
+        return blockType == Material.CHEST || blockType == Material.TRAPPED_CHEST;
     }
 
 }
